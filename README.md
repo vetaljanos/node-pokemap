@@ -26,7 +26,7 @@ curl -X POST 'http://127.0.0.1:3000/api/com.pokemon.go/login' \
   -d '{ "username": "johndoe", "password": "secret", "provider": "ptc", "location": { "type": "name", "name": "Provo, UT" } }'
 
 # Get some Pokemon Map data
-curl 'http://127.0.0.1:3000/api/com.pokemon.go/nearby?latitude=40.36915523640919&longitude=-111.75098587678943&step=10&offset=0' \
+curl 'http://127.0.0.1:3000/api/com.pokemon.go/nearby?latitude=40.36915523640919&longitude=-111.75098587678943&altitude=0step=10&offset=0' \
   -H 'Authorization: Bearer xxxxxxxxxxxxxxxxx'
 ```
 

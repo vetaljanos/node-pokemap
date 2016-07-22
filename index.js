@@ -163,9 +163,23 @@ function getData(req, res) {
 
   // TODO check expAt
   var creds = jankStore[accessToken];
-  //var pokeio = PokemonGo.deserialize(creds.session);
-  //getNearby();
+  if (!req.query.latitude || !req.query.longitude) {
+    res.send({ error: { message: "missing latitude or longitude" } });
+    return;
+  }
 
+  creds.session.latitude = parseFloat(req.query.latitude, 10);
+  creds.session.longitude = parseFloat(req.query.longitude, 10);
+  creds.session.altitude = parseFloat(req.query.altitude, 10) || 0;
+
+  ///*
+  var pokeio = PokemonGo.deserialize(creds.session);
+
+  getNearby();
+  //*/
+
+  //
+  /*
   var pokeio = new PokemonGo.Pokeio();
   var loc = { type: 'coords', coords: { latitude: creds.session.latitude, longitude: creds.session.longitude } };
 
@@ -178,8 +192,14 @@ function getData(req, res) {
       return;
     }
 
-    getNearby();
+    pokeio.GetProfile(function(err, profile) {
+      console.log('DEBUG profile');
+      console.log(profile);
+
+      getNearby();
+    });
   });
+  //*/
 }
 
 app.use('/api/com.pokemon.go/login', bodyParser.json());
