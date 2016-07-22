@@ -9,6 +9,8 @@ Node.js port of PokemonGo-Map
 
 # Testing
 
+Register a `ptc` (Pokemon Trainer Club) account: https://sso.pokemon.com/sso/login
+
 ```bash
 # Get the access_token
 curl -X POST 'http://127.0.0.1:3000/api/com.pokemon.go/login' \
