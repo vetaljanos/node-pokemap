@@ -2,6 +2,14 @@
 
 Node.js port of PokemonGo-Map
 
+```bash
+git clone https://github.com/coolaj86/node-pokemap.git
+pushd node-pokemap
+npm install
+
+node index.js
+```
+
 # Endpoints
 
 * `POST http://127.0.0.1:3000/api/com.pokemon.go/login`
