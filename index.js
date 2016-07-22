@@ -1,17 +1,19 @@
 'use strict';
 
-var http = require('http');
 var express = require('express');
 var PokemonGo = require('pokemon-go-node-api');
-var request = require('request');
 var bodyParser = require('body-parser');
-//var FileCookieStore = require('tough-cookie-filestore');
-var path = require('path');
 var app = express();
-var server = http.createServer(app);
 var crypto = require('crypto');
 var jankStore = {}; // TODO will be replaced
 
+//
+// Shim for PokemonGo lib, needs pull request once complete
+//
+//
+//var request = require('request');
+//var FileCookieStore = require('tough-cookie-filestore');
+//var path = require('path');
 PokemonGo.Pokeio.prototype.serialize = function () {
   var self = this;
   var json = {
@@ -185,6 +187,4 @@ app.post('/api/com.pokemon.go/login', postLogin);
 app.get('/api/com.pokemon.go/nearby', getData);
 app.get('/raw_data', getData);
 
-server.listen(3000, function () {
-  console.log('server ready', server.address());
-});
+module.exports = app;

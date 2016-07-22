@@ -7,7 +7,7 @@ git clone https://github.com/coolaj86/node-pokemap.git
 pushd node-pokemap
 npm install
 
-node index.js
+node serve.js
 ```
 
 # Endpoints
