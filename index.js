@@ -63,12 +63,53 @@ PokemonGo.deserialize = function (opts) {
   return pokeio;
 };
 
+PokemonGo.Pokeio.prototype.Login = function (username, password, provider, callback) {
+  var self = this;
+
+  if (provider !== 'ptc' && provider !== 'google') {
+    return callback(new Error('Invalid provider'));
+  }
+
+  self.playerInfo.provider = provider;
+  self.GetAccessToken(username, password, function (err, accessToken) {
+    // Note: stores accessToken as self.playerInfo.accessToken
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    self.GetApiEndpoint(function (err, apiEndpoint) {
+      // Note: stores endpoint as self.playerInfo.apiEndpoint
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (callback) {
+        callback(null, {
+          username: username
+        //, password: password // TODO cipher
+        , provider: provider
+        , accessToken: accessToken
+        , apiEndpoint: apiEndpoint
+        });
+      }
+    });
+  });
+};
+
 function postLogin(req, res) {
   var pokeio = new PokemonGo.Pokeio();
 
   // location = { latitude, longitude, altitude, type(coords|name), name }
   // provider = ptc | google
-  pokeio.init(req.body.username, req.body.password, req.body.location, req.body.provider, function (err) {
+  //pokeio.init(req.body.username, req.body.password, req.body.location, req.body.provider, function (err) {
+  pokeio.Login(
+    req.body.username
+  , req.body.password
+  , req.body.provider
+  , function (err/*, { username, password, provider, accessToken, apiEndpoint }*/) {
+    // Note: stores accessToken as self.playerInfo.accessToken
     if (err) {
       res.send({ error: { message: err.toString() } });
       return;
@@ -85,6 +126,7 @@ function postLogin(req, res) {
     , accessToken: rnd
     , username: req.body.username
     , password: req.body.password // TODO store in JWT, encrypted
+    , provider: req.body.provider
     , session: PokemonGo.serialize(pokeio)
     };
     // TODO XXX REMOVE THIS!!!
@@ -97,15 +139,9 @@ function postLogin(req, res) {
 function getData(req, res) {
   // TODO handle updates
   // query = { location, pokestops, gyms, pokemons }
-  var accessToken = (req.headers.authorization||'').replace(/(Bearer|Token|JWT) /ig, '');
-
-  if (!jankStore[accessToken]) {
-    res.send({ error: { message: "unrecognized access token, try again" } });
-    return;
-  }
 
   function getNearby() {
-    pokeio.Heartbeat(function(err,hb) {
+    pokeio.Heartbeat(function (err, hb) {
       var pokemons = [];
 
       if (err) {
@@ -121,31 +157,35 @@ function getData(req, res) {
       hb.cells.forEach(function (cell) {
         cell.MapPokemon.forEach(function (pokemon) {
 
-          var exp = pokemon.ExpirationTimeMs.toUnsigned(); // TODO convert to int more exactly
-          var id = new Buffer(8); // pokemon.EncounterId;        // ??? how to convert from ProtoLong to base64? // also NearbyPokemon[i].EncounterId
+          var exp = pokemon.ExpirationTimeMs; //.toUnsigned(); // TODO convert to int more exactly
+          var id = Buffer.alloc(8); // pokemon.EncounterId;        // ??? how to convert from ProtoLong to base64? // also NearbyPokemon[i].EncounterId
+          var l = pokemon.EncounterId;
 
           console.log('DEBUG pokemon.EncounterId');
           console.log(pokemon.EncounterId.high);
           console.log(pokemon.EncounterId.low);
           if (id.unsigned) {
-            id.writeUInt32BE(pokemon.EncounterId.high);
-            id.writeUInt32BE(pokemon.EncounterId.low);
+            id.writeUInt32LE(pokemon.EncounterId.high, 0);
+            id.writeUInt32LE(pokemon.EncounterId.low, 4);
             //id.writeUInt32LE(pokemon.EncounterId.low);
             //id.writeUInt32LE(pokemon.EncounterId.high);
           }
           else {
-            id.writeInt32BE(pokemon.EncounterId.high);
-            id.writeInt32BE(pokemon.EncounterId.low);
-            //id.writeInt32LE(pokemon.EncounterId.low);
-            //id.writeInt32LE(pokemon.EncounterId.high);
+            // https://github.com/dcodeIO/long.js/issues/34#issuecomment-234544371
+            // BE
+            id.writeInt32BE(l.high, 0);
+            id.writeInt32BE(l.low, 4);
+            // or LE
+            //id.writeInt32LE(l.low, 0);
+            //id.writeInt32LE(l.high, 4);
           }
 
           pokemons.push({
             disappear_time: exp.toNumber()
           //, encounter_id: null
           , encounter_id: id.toString('base64') // this is probably still wrong
-          , latitude: pokemon.Latitude.toString()
-          , longitude: pokemon.Longitude.toString()
+          , latitude: parseFloat(pokemon.Latitude.toString(), 10)
+          , longitude: parseFloat(pokemon.Longitude.toString(), 10)
           , pokemon_id: pokemon.PokedexTypeId // also NearbyPokemon[i].PokedexNumber
           , pokemon_name: (pokeio.pokemonlist[pokemon.PokedexTypeId - 1]||{}).name
           , spawnpoint_id: pokemon.SpawnpointId
@@ -162,15 +202,20 @@ function getData(req, res) {
   }
 
   // TODO check expAt
-  var creds = jankStore[accessToken];
+  var creds = req.sess;
   if (!req.query.latitude || !req.query.longitude) {
     res.send({ error: { message: "missing latitude or longitude" } });
     return;
   }
 
-  creds.session.latitude = parseFloat(req.query.latitude, 10);
-  creds.session.longitude = parseFloat(req.query.longitude, 10);
-  creds.session.altitude = parseFloat(req.query.altitude, 10) || 0;
+  // TODO allow named coords
+  // var geocoder = require('geocoder');
+  // geocoder.reverseGeocode(lat, lng, function (err, data) { ... });
+  // geocoder.geocode(locationName, function (err, data) { ... });
+
+  creds.session.latitude = parseFloat(req.query.latitude || req.query.lat, 10) || creds.session.latitude;
+  creds.session.longitude = parseFloat(req.query.longitude || req.query.lng || req.query.lon, 10) || creds.session.longitude;
+  creds.session.altitude = parseFloat(req.query.altitude || req.query.alt, 10) || 0;
 
   ///*
   var pokeio = PokemonGo.deserialize(creds.session);
@@ -202,9 +247,47 @@ function getData(req, res) {
   //*/
 }
 
+function getLoc(req, res) {
+  res.send({
+    latitude: req.sess.session.latitude
+  , longitude: req.sess.session.longitude
+  });
+}
+
+function postLoc(req, res) {
+  req.sess.session.latitude = parseFloat(req.query.lat, 10);
+  req.sess.session.longitude = parseFloat(req.query.lng, 10);
+
+  res.send({ success: true });
+}
+
+function attachSession(req, res, next) {
+  var accessToken = (req.headers.authorization||'').replace(/(Bearer|Token|JWT) /ig, '');
+
+  req.sess = jankStore[accessToken];
+  next();
+}
+
+function requireSession(req, res, next) {
+  if (!req.sess) {
+    res.send({ error: { message: "unrecognized access token, try again" } });
+    return;
+  }
+
+  next();
+}
+
 app.use('/api/com.pokemon.go/login', bodyParser.json());
 app.post('/api/com.pokemon.go/login', postLogin);
-app.get('/api/com.pokemon.go/nearby', getData);
-app.get('/raw_data', getData);
+
+app.use('/', attachSession);
+
+app.get('/api/com.pokemon.go/nearby', requireSession, getData);
+app.get('/raw_data', requireSession, getData);
+
+// Get / Set session data (pretty useless, on the whole)
+app.get('/loc', requireSession, getLoc);
+app.post('/next_loc', requireSession, postLoc);
+//app.post('/pokemon', getData);
 
 module.exports = app;

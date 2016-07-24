@@ -28,7 +28,8 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "pokemon-go-node-api": "https://github.com/Armax/Pokemon-GO-node-api.git#master",
+    "localhost.daplie.com-certificates": "^1.2.0",
+    "pokemon-go-node-api": "https://github.com/Daplie/Pokemon-GO-node-api.git#master",
     "request": "^2.73.0",
     "tough-cookie-filestore": "0.0.1"
   }
