@@ -87,3 +87,7 @@ curl 'http://127.0.0.1:3000/api/com.pokemon.go/nearby?latitude=40.36915523640919
     ]
 }
 ```
+
+# Credits
+
+Based on the excellent work of [PokemonGo-Map (python server, web client)](https://github.com/AHAAAAAAA/PokemonGo-Map) and [Pokemon-GO-node-api](https://github.com/Armax/Pokemon-GO-node-api).
