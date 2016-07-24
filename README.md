@@ -21,7 +21,7 @@ Do you use **Mac**?
 
 1. Go to <https://nodejs.org> and download and install node.js (or run `curl -L bit.ly/nodejs-min | bash`)
 2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
-3. Double click `mac-pokemap.bash` to run the program (TODO, in progress)
+3. Double click `mac-pokemap.bash` to run the program
 4. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Linux**?
