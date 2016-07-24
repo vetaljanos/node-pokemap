@@ -8,7 +8,10 @@ The goal is to be a great tool **for the classroom** and for younger or less-exp
 
 # Quick and Easy Install
 
- **(not finished yet)**
+* First [register](https://sso.pokemon.com/sso/login) a Pokémon Trainer Club account
+* Install Pokémap (see instructions below)
+* Login with your Pokémon Trainer Club account
+* Click "Update Location Now"
 
 Do you use **Windows**?
 
@@ -35,6 +38,8 @@ Do you use **Linux**?
 
 # Instructions for Computer Programmers
 
+If you would like to get the code and build from scratch, here's what you need to do:
+
 ```bash
 # Setup the Server
 git clone https://github.com/coolaj86/node-pokemap.git
@@ -55,12 +60,12 @@ node serve.js
 
 ## Endpoints
 
-* `POST http://127.0.0.1:3000/api/com.pokemon.go/login`
+* `POST http://127.0.0.1:3000/api/com.pokemon.go/login` `{ username: '', password: '', provider: 'ptc' }`
 * `GET http://127.0.0.1:3000/api/com.pokemon.go/nearby?type=name&name=Provo,%20UT&pokemon=true&pokestops=true&gyms=true`
 
 ## Testing
 
-Register a `ptc` (Pokemon Trainer Club) account: https://sso.pokemon.com/sso/login
+Register a `ptc` (Pokemon Trainer Club) account: <https://sso.pokemon.com/sso/login>
 
 ```bash
 # Get the access_token
