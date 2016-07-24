@@ -3,10 +3,19 @@
 Node.js port of PokemonGo-Map
 
 ```bash
+# Setup the Server
 git clone https://github.com/coolaj86/node-pokemap.git
-pushd node-pokemap
+pushd node-pokemap/
 npm install
 
+# Setup (and build) the Web Client
+git clone https://github.com/Daplie/PokemonGo-Map-web-client.git ./public
+pushd public/
+npm install -g grunt
+grunt
+popd
+
+# Run the Server
 node serve.js
 ```
 
