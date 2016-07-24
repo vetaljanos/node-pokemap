@@ -4,6 +4,8 @@ This is a very simple Pokemon GO Pokémap Server that normal-ish people can use 
 
 The goal is to be a great tool **for the classroom** and for younger or less-experienced techies that are good enough at googling, following instructions, and can copy/paste to make things work.
 
+![](http://i.imgur.com/i2PHT9d.png)
+
 # Quick and Easy Install
 
  **(not finished yet)**
