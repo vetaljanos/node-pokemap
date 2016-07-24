@@ -4,20 +4,34 @@ This is a very simple Pokemon GO Pokémap Server that normal-ish people can use 
 
 The goal is to be a great tool **for the classroom** and for younger or less-experienced techies that are good enough at googling, following instructions, and can copy/paste to make things work.
 
-## Quick and Easy Install (not finished yet)
+# Quick and Easy Install
 
-1. Go to <https://nodejs.org> and download and install node.js (next, next, finish)
-  * Windows 7, 8, 10: [Download Automatic Installer](https://nodejs.org/dist/v6.3.1/node-v6.3.1-x86.msi)
-  * Apple OS X and macOS [Download Automatic Installer](https://nodejs.org/dist/v6.3.1/node-v6.3.1.pkg)
-  * Linux (and OS X and macOS): Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
-2. Download and open [pokémap.zip](#TODO) (TODO, in progress)
-3. Run the program
-  * Windows users: double click `windows-pokemap.bat` (TODO, in progress)
-  * OS X and macOS users: double click `pokemap.bash` (TODO, in progress)
-  * Linux users: double click `pokemap.bash` (TODO, in progress)
+ **(not finished yet)**
+
+Do you use **Windows**?
+
+1. Go to <https://nodejs.org> and download and install node.js
+2. Download and open [pokemap.zip](#TODO) (TODO, in progress)
+3. Double click `windows-pokemap.bat` to run the program (TODO, in progress)
 4. Go to <https://localhost.daplie.com:3000>
 
-## Instructions for Computer Programmers
+Do you use **Mac**?
+
+1. Go to <https://nodejs.org> and download and install node.js (or run `curl -L bit.ly/nodejs-min | bash`)
+2. Download and open [pokemap.zip](#TODO) (TODO, in progress)
+3. Double click `mac-pokemap.bash` to run the program (TODO, in progress)
+4. Go to <https://localhost.daplie.com:3000>
+
+Do you use **Linux**?
+
+1. Install node.js
+  * Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
+  * Or go to <https://nodejs.org> and figure it out the hard way.
+2. Download and open [pokemap.zip](#TODO) (TODO, in progress)
+3. Double click `linux-pokemap.bash` to run the program (TODO, in progress)
+4. Go to <https://localhost.daplie.com:3000>
+
+# Instructions for Computer Programmers
 
 ```bash
 # Setup the Server
@@ -36,12 +50,12 @@ popd
 node serve.js
 ```
 
-### Endpoints
+## Endpoints
 
 * `POST http://127.0.0.1:3000/api/com.pokemon.go/login`
 * `GET http://127.0.0.1:3000/api/com.pokemon.go/nearby?type=name&name=Provo,%20UT&pokemon=true&pokestops=true&gyms=true`
 
-### Testing
+## Testing
 
 Register a `ptc` (Pokemon Trainer Club) account: https://sso.pokemon.com/sso/login
 
@@ -56,7 +70,7 @@ curl 'http://127.0.0.1:3000/api/com.pokemon.go/nearby?latitude=40.36915523640919
   -H 'Authorization: Bearer xxxxxxxxxxxxxxxxx'
 ```
 
-### Sample Objects
+## Sample Objects
 
 ```json
 {   "pokemons": [
