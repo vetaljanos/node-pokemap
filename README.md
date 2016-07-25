@@ -16,14 +16,14 @@ The goal is to be a great tool **for the classroom** and for younger or less-exp
 Do you use **Windows**?
 
 1. Go to <https://nodejs.org> and download and install node.js
-2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
+2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/382505/pokemap-2016-07-25.zip)
 3. Double click `windows-pokemap.bat` to run the program
 4. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Mac**?
 
 1. Go to <https://nodejs.org> and download and install node.js (or run `curl -L bit.ly/nodejs-min | bash`)
-2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
+2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/382505/pokemap-2016-07-25.zip)
 3. Double click `mac-pokemap.bash` to run the program
 4. Go to <https://localhost.daplie.com:3443>
 
@@ -32,7 +32,7 @@ Do you use **Linux**?
 1. Install node.js
   * Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
   * Or go to <https://nodejs.org> and figure it out the hard way.
-2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
+2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/382505/pokemap-2016-07-25.zip)
 3. Double click `linux-pokemap.bash` to run the program
 4. Go to <https://localhost.daplie.com:3443>
 
