@@ -8,32 +8,37 @@ The goal is to be a great tool **for the classroom** and for younger or less-exp
 
 # Quick and Easy Install
 
- **(not finished yet)**
+* First [register](https://sso.pokemon.com/sso/login) a Pokémon Trainer Club account
+* Install Pokémap (see instructions below)
+* Login with your Pokémon Trainer Club account
+* Click "Update Location Now"
 
 Do you use **Windows**?
 
 1. Go to <https://nodejs.org> and download and install node.js
-2. Download and open [pokemap.zip](#TODO) (TODO, in progress)
-3. Double click `windows-pokemap.bat` to run the program (TODO, in progress)
-4. Go to <https://localhost.daplie.com:3000>
+2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
+3. Double click `windows-pokemap.bat` to run the program
+4. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Mac**?
 
 1. Go to <https://nodejs.org> and download and install node.js (or run `curl -L bit.ly/nodejs-min | bash`)
-2. Download and open [pokemap.zip](#TODO) (TODO, in progress)
-3. Double click `mac-pokemap.bash` to run the program (TODO, in progress)
-4. Go to <https://localhost.daplie.com:3000>
+2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
+3. Double click `mac-pokemap.bash` to run the program
+4. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Linux**?
 
 1. Install node.js
   * Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
   * Or go to <https://nodejs.org> and figure it out the hard way.
-2. Download and open [pokemap.zip](#TODO) (TODO, in progress)
-3. Double click `linux-pokemap.bash` to run the program (TODO, in progress)
-4. Go to <https://localhost.daplie.com:3000>
+2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
+3. Double click `linux-pokemap.bash` to run the program
+4. Go to <https://localhost.daplie.com:3443>
 
 # Instructions for Computer Programmers
+
+If you would like to get the code and build from scratch, here's what you need to do:
 
 ```bash
 # Setup the Server
@@ -55,12 +60,12 @@ node serve.js
 
 ## Endpoints
 
-* `POST http://127.0.0.1:3000/api/com.pokemon.go/login`
+* `POST http://127.0.0.1:3000/api/com.pokemon.go/login` `{ username: '', password: '', provider: 'ptc' }`
 * `GET http://127.0.0.1:3000/api/com.pokemon.go/nearby?type=name&name=Provo,%20UT&pokemon=true&pokestops=true&gyms=true`
 
 ## Testing
 
-Register a `ptc` (Pokemon Trainer Club) account: https://sso.pokemon.com/sso/login
+Register a `ptc` (Pokemon Trainer Club) account: <https://sso.pokemon.com/sso/login>
 
 ```bash
 # Get the access_token
