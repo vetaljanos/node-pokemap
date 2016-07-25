@@ -143,6 +143,8 @@ function getData(req, res) {
   function getNearby() {
     pokeio.Heartbeat(function (err, hb) {
       var pokemons = [];
+      var pokestops = [];
+      var gyms = [];
 
       if (err) {
         console.error('ERROR: Heartbeat');
@@ -151,10 +153,45 @@ function getData(req, res) {
         return;
       }
 
+      /*
+      console.log('');
       console.log('DEBUG hb');
       console.log(hb);
+      */
 
+      // Described at ./node_modules/pokemon-go-node-api/pokemon.proto
       hb.cells.forEach(function (cell) {
+        // TODO insert into database since this is longstanding
+        cell.Fort.forEach(function (fort) {
+          if ('1' === fort.Type.toString()) {
+            // it's a pokestop!
+            console.log('DEBUG PokeStop');
+            console.log(fort);
+            pokestops.push({
+              pokestop_id: fort.FortId
+            , active_pokemon_id: fort.LureInfo.ActivePokemonId
+            , enabled: fort.Enabled
+            , last_modified: parseInt(fort.LastModifiedMs.toString(), 10)
+            , latitude: fort.Latitude
+            , longitude: fort.Longitude
+            , lure_expiration: parseInt(fort.LureInfo.LureExpiresTimestampMs && fort.LureInfo.LureExpiresTimestampMs.toString(), 10) || 0
+            });
+          }
+          else {
+            // it's a gym!
+            gyms.push({
+              gym_id: fort.FortId
+            , gym_points: fort.GymPoints
+            , enabled: fort.Enabled
+            , guard_pokemon_id: fort.GuardPokemonId
+            , guard_pokemon_level: fort.GuardPokemonLevel
+            , last_modified: parseInt(fort.LastModifiedMs.toString(), 10)
+            , latitude: fort.Latitude
+            , longitude: fort.Longitude
+            , team_id: fort.Team
+            });
+          }
+        });
         cell.MapPokemon.forEach(function (pokemon) {
 
           var exp = pokemon.ExpirationTimeMs; //.toUnsigned(); // TODO convert to int more exactly
@@ -195,8 +232,8 @@ function getData(req, res) {
 
       res.send({
         pokemons: pokemons
-      , pokestops: []
-      , gyms: []
+      , pokestops: pokestops
+      , gyms: gyms
       });
     });
   }
