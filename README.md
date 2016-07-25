@@ -1,4 +1,4 @@
-# The Pokemon GO Map Server for Normal(-ish) People
+# Pokemon GO Map (node.js server)
 
 This is a very simple Pokemon GO Map (Pokémap) Server that normal-ish people can use (as in maybe not my mom, but probably my sister).
 
@@ -6,35 +6,9 @@ The goal is to be a great tool **for the classroom** and for younger or less-exp
 
 ![](http://i.imgur.com/i2PHT9d.png)
 
-# Quick and Easy Install
+# Quick and Easy Install for Normal-ish People
 
-* First [register](https://sso.pokemon.com/sso/login) a Pokémon Trainer Club account
-* Install Pokémap (see instructions below)
-* Login with your Pokémon Trainer Club account
-* Click "Update Location Now"
-
-Do you use **Windows**?
-
-1. Go to <https://nodejs.org> and download and install node.js
-2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/382505/pokemap-2016-07-25.zip)
-3. Double click `windows-pokemap.bat` to run the program
-4. Go to <https://localhost.daplie.com:3443>
-
-Do you use **Mac**?
-
-1. Go to <https://nodejs.org> and download and install node.js (or run `curl -L bit.ly/nodejs-min | bash`)
-2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/382505/pokemap-2016-07-25.zip)
-3. Double click `mac-pokemap.bash` to run the program
-4. Go to <https://localhost.daplie.com:3443>
-
-Do you use **Linux**?
-
-1. Install node.js
-  * Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
-  * Or go to <https://nodejs.org> and figure it out the hard way.
-2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/382505/pokemap-2016-07-25.zip)
-3. Double click `linux-pokemap.bash` to run the program
-4. Go to <https://localhost.daplie.com:3443>
+Go to <https://github.com/Daplie/pokemap-webapp>
 
 # Instructions for Computer Programmers
 
