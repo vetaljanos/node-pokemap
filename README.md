@@ -8,7 +8,7 @@ The goal is to be a great tool **for the classroom** and for younger or less-exp
 
 # Quick and Easy Install for Normal-ish People
 
-Go to <https://github.com/Daplie/pokemap-webapp>
+Go to [Pokémap Web App](https://github.com/Daplie/pokemap-webapp)
 
 # Instructions for Computer Programmers
 
