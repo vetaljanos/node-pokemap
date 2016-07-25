@@ -1,6 +1,6 @@
-# The Pokémap Server for Normal(-ish) People
+# The Pokemon GO Map Server for Normal(-ish) People
 
-This is a very simple Pokemon GO Pokémap Server that normal-ish people can use (as in maybe not my mom, but probably my sister).
+This is a very simple Pokemon GO Map (Pokémap) Server that normal-ish people can use (as in maybe not my mom, but probably my sister).
 
 The goal is to be a great tool **for the classroom** and for younger or less-experienced techies that are good enough at googling, following instructions, and can copy/paste to make things work.
 
@@ -127,6 +127,42 @@ curl 'http://127.0.0.1:3000/api/com.pokemon.go/nearby?latitude=40.36915523640919
 }
 ```
 
+## Why Fork?
+
+Philosophy - make it easier for non-technical people.
+
+Pokémon GO is used mostly by teenagers and young adults.
+Instead of creating code with the latest, coolest features
+we're redesigning this to work with existing phones and browers
+and without additional build steps or fancy tools.
+
+We want **Pokémap** to be something that teenagers and high school
+teachers can easily use on any computer with minimal installation
+of programming languages or developer tools.
+
+All node.js JavaScript
+
+  * no python
+  * no ruby
+  * minimal C++ (
+
+No Build Steps
+
+  * HTML 5
+  * ES5.1 JavaScript (no ES6 build steps)
+  * CSS (no SASS build steps)
+
 # Credits
 
 Based on the excellent work of [PokemonGo-Map (python server, web client)](https://github.com/AHAAAAAAA/PokemonGo-Map) and [Pokemon-GO-node-api](https://github.com/Armax/Pokemon-GO-node-api).
+
+## Other Tools
+
+* [Python & Web PokemonGo-Map](https://github.com/AHAAAAAAA/PokemonGo-Map) - python, html, sass, ES6
+* [node pokemap](https://github.com/Daplie/node-pokemap) - node, html, css, es5.1
+* [Pokemon-GO-node-api](https://github.com/Armax/Pokemon-GO-node-api) node
+* [Android Pokemap](https://github.com/omkarmoghe/Pokemap)
+* [PokemonGo-DesktopMap](https://github.com/mchristopher/PokemonGo-DesktopMap)
+* [Mila432/Pokemon_Go_API](https://github.com/Mila432/Pokemon_Go_API)
+* [tejado's pokemongo-api-demo](https://github.com/tejado/pokemongo-api-demo)
+* [leegao's additions](https://github.com/leegao/pokemongo-api-demo/tree/simulation)
