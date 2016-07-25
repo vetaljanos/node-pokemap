@@ -33,7 +33,7 @@ data.gyms.forEach(function (gym) {
 data.pokestops.forEach(function (gym) {
   gym.latitude = parseFloat((gym.latitude - loc.lat).toFixed(7), 10);
   gym.longitude = parseFloat((gym.longitude - loc.lng).toFixed(7), 10);
-  gym.lure_expiration = gym.lure_expiration - ms;
+  gym.lure_expiration = gym.lure_expiration && (gym.lure_expiration - ms) || null;
 });
 
 //console.log('times');

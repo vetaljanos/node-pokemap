@@ -189,7 +189,7 @@ function mockData(loc) {
   data.pokestops.forEach(function (gym) {
     gym.latitude = parseFloat((gym.latitude + loc.lat).toFixed(6), 10);
     gym.longitude = parseFloat((gym.longitude + loc.lng).toFixed(6), 10);
-    gym.lure_expiration = gym.lure_expiration + ms;
+    gym.lure_expiration = gym.lure_expiration && (gym.lure_expiration + ms) || null;
   });
 
   return data;
