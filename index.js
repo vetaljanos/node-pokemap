@@ -5,7 +5,22 @@ var PokemonGo = require('pokemon-go-node-api');
 var bodyParser = require('body-parser');
 var app = express();
 var crypto = require('crypto');
-var jankStore = {}; // TODO will be replaced
+
+// TODO use database
+var jankStore = {
+  demo: {
+    exp: new Date(Date.now() + (365 * 24 * 60 * 60 * 1000))
+  , expIn: (365 * 24 * 60 * 60 * 1000)
+  , accessToken: 'demo'
+  , username: 'demo'
+  , password: 'demo' // TODO store in JWT, encrypted
+  , provider: 'demo'
+  , session: {
+      latitude: 40.36915523640919
+    , longitude: -111.75098587678943
+    }
+  }
+};
 
 //
 // Shim for PokemonGo lib, needs pull request once complete
@@ -99,6 +114,17 @@ PokemonGo.Pokeio.prototype.Login = function (username, password, provider, callb
 };
 
 function postLogin(req, res) {
+  if (
+      'demo' === req.body.username
+    || 'demo' === req.body.password
+    || 'demo' === req.body.provider
+    || 'user' === req.body.username
+    || 'password' === req.body.password
+  ) {
+    res.send({ access_token: jankStore.demo.accessToken, expires_in: jankStore.demo.expIn });
+    return;
+  }
+
   var pokeio = new PokemonGo.Pokeio();
 
   // location = { latitude, longitude, altitude, type(coords|name), name }
@@ -136,110 +162,145 @@ function postLogin(req, res) {
   });
 }
 
+function mockData(loc) {
+  var data = JSON.parse(JSON.stringify(require('./demo.json')));
+  var ms = Date.now();
+
+  loc.lat = parseFloat(loc.latitude.toFixed(6), 10);
+  loc.lng = parseFloat(loc.longitude.toFixed(6), 10);
+
+  data.pokemons = data.pokemons.map(function (pokemon) {
+    pokemon.latitude += loc.latitude;
+    pokemon.longitude += loc.longitude;
+    pokemon.disappear_time += ms;
+
+    return pokemon;
+  }).filter(function () {
+    if (Math.round(Math.random() * 100) % 10) {
+      return true;
+      //pokemon.disappear_time -= (15 * );
+    }
+    return false;
+  });
+  data.gyms.forEach(function (gym) {
+    gym.latitude = parseFloat((gym.latitude + loc.lat).toFixed(6), 10);
+    gym.longitude = parseFloat((gym.longitude + loc.lng).toFixed(6), 10);
+  });
+  data.pokestops.forEach(function (gym) {
+    gym.latitude = parseFloat((gym.latitude + loc.lat).toFixed(6), 10);
+    gym.longitude = parseFloat((gym.longitude + loc.lng).toFixed(6), 10);
+    gym.lure_expiration = gym.lure_expiration + ms;
+  });
+
+  return data;
+}
+
+function getNearby(pokeio, cb) {
+  pokeio.Heartbeat(function (err, hb) {
+    var pokemons = [];
+    var pokestops = [];
+    var gyms = [];
+
+    if (err) {
+      console.error('ERROR: Heartbeat');
+      console.error(err);
+      cb({ error: { message: err.toString() } });
+      return;
+    }
+
+    /*
+    console.log('');
+    console.log('DEBUG hb');
+    console.log(hb);
+    */
+
+    // Described at ./node_modules/pokemon-go-node-api/pokemon.proto
+    hb.cells.forEach(function (cell) {
+      // TODO insert into database since this is longstanding
+      cell.Fort.forEach(function (fort) {
+        if ('1' === fort.Type.toString()) {
+          // it's a pokestop!
+          console.log('DEBUG PokeStop');
+          console.log(fort);
+          pokestops.push({
+            pokestop_id: fort.FortId
+          , active_pokemon_id: fort.LureInfo.ActivePokemonId
+          , enabled: fort.Enabled
+          , last_modified: parseInt(fort.LastModifiedMs.toString(), 10)
+          , latitude: fort.Latitude
+          , longitude: fort.Longitude
+          , lure_expiration: parseInt(fort.LureInfo.LureExpiresTimestampMs && fort.LureInfo.LureExpiresTimestampMs.toString(), 10) || 0
+          });
+        }
+        else {
+          // it's a gym!
+          gyms.push({
+            gym_id: fort.FortId
+          , gym_points: fort.GymPoints
+          , enabled: fort.Enabled
+          , guard_pokemon_id: fort.GuardPokemonId
+          , guard_pokemon_level: fort.GuardPokemonLevel
+          , last_modified: parseInt(fort.LastModifiedMs.toString(), 10)
+          , latitude: fort.Latitude
+          , longitude: fort.Longitude
+          , team_id: fort.Team
+          });
+        }
+      });
+      cell.MapPokemon.forEach(function (pokemon) {
+
+        var exp = pokemon.ExpirationTimeMs; //.toUnsigned(); // TODO convert to int more exactly
+        var id = Buffer.alloc(8); // pokemon.EncounterId;        // ??? how to convert from ProtoLong to base64? // also NearbyPokemon[i].EncounterId
+        var l = pokemon.EncounterId;
+
+        console.log('DEBUG pokemon.EncounterId');
+        console.log(pokemon.EncounterId.high);
+        console.log(pokemon.EncounterId.low);
+        if (id.unsigned) {
+          id.writeUInt32LE(pokemon.EncounterId.high, 0);
+          id.writeUInt32LE(pokemon.EncounterId.low, 4);
+          //id.writeUInt32LE(pokemon.EncounterId.low);
+          //id.writeUInt32LE(pokemon.EncounterId.high);
+        }
+        else {
+          // https://github.com/dcodeIO/long.js/issues/34#issuecomment-234544371
+          // BE
+          id.writeInt32BE(l.high, 0);
+          id.writeInt32BE(l.low, 4);
+          // or LE
+          //id.writeInt32LE(l.low, 0);
+          //id.writeInt32LE(l.high, 4);
+        }
+
+        pokemons.push({
+          disappear_time: exp.toNumber()
+        //, encounter_id: null
+        , encounter_id: id.toString('base64') // this is probably still wrong
+        , latitude: parseFloat(pokemon.Latitude.toString(), 10)
+        , longitude: parseFloat(pokemon.Longitude.toString(), 10)
+        , pokemon_id: pokemon.PokedexTypeId // also NearbyPokemon[i].PokedexNumber
+        , pokemon_name: (pokeio.pokemonlist[pokemon.PokedexTypeId - 1]||{}).name
+        , spawnpoint_id: pokemon.SpawnpointId
+        });
+      });
+    });
+
+    cb(null, {
+      pokemons: pokemons
+    , pokestops: pokestops
+    , gyms: gyms
+    });
+  });
+}
+
 function getData(req, res) {
   // TODO handle updates
   // query = { location, pokestops, gyms, pokemons }
 
-  function getNearby() {
-    pokeio.Heartbeat(function (err, hb) {
-      var pokemons = [];
-      var pokestops = [];
-      var gyms = [];
-
-      if (err) {
-        console.error('ERROR: Heartbeat');
-        console.error(err);
-        res.send({ error: { message: err.toString() } });
-        return;
-      }
-
-      /*
-      console.log('');
-      console.log('DEBUG hb');
-      console.log(hb);
-      */
-
-      // Described at ./node_modules/pokemon-go-node-api/pokemon.proto
-      hb.cells.forEach(function (cell) {
-        // TODO insert into database since this is longstanding
-        cell.Fort.forEach(function (fort) {
-          if ('1' === fort.Type.toString()) {
-            // it's a pokestop!
-            console.log('DEBUG PokeStop');
-            console.log(fort);
-            pokestops.push({
-              pokestop_id: fort.FortId
-            , active_pokemon_id: fort.LureInfo.ActivePokemonId
-            , enabled: fort.Enabled
-            , last_modified: parseInt(fort.LastModifiedMs.toString(), 10)
-            , latitude: fort.Latitude
-            , longitude: fort.Longitude
-            , lure_expiration: parseInt(fort.LureInfo.LureExpiresTimestampMs && fort.LureInfo.LureExpiresTimestampMs.toString(), 10) || 0
-            });
-          }
-          else {
-            // it's a gym!
-            gyms.push({
-              gym_id: fort.FortId
-            , gym_points: fort.GymPoints
-            , enabled: fort.Enabled
-            , guard_pokemon_id: fort.GuardPokemonId
-            , guard_pokemon_level: fort.GuardPokemonLevel
-            , last_modified: parseInt(fort.LastModifiedMs.toString(), 10)
-            , latitude: fort.Latitude
-            , longitude: fort.Longitude
-            , team_id: fort.Team
-            });
-          }
-        });
-        cell.MapPokemon.forEach(function (pokemon) {
-
-          var exp = pokemon.ExpirationTimeMs; //.toUnsigned(); // TODO convert to int more exactly
-          var id = Buffer.alloc(8); // pokemon.EncounterId;        // ??? how to convert from ProtoLong to base64? // also NearbyPokemon[i].EncounterId
-          var l = pokemon.EncounterId;
-
-          console.log('DEBUG pokemon.EncounterId');
-          console.log(pokemon.EncounterId.high);
-          console.log(pokemon.EncounterId.low);
-          if (id.unsigned) {
-            id.writeUInt32LE(pokemon.EncounterId.high, 0);
-            id.writeUInt32LE(pokemon.EncounterId.low, 4);
-            //id.writeUInt32LE(pokemon.EncounterId.low);
-            //id.writeUInt32LE(pokemon.EncounterId.high);
-          }
-          else {
-            // https://github.com/dcodeIO/long.js/issues/34#issuecomment-234544371
-            // BE
-            id.writeInt32BE(l.high, 0);
-            id.writeInt32BE(l.low, 4);
-            // or LE
-            //id.writeInt32LE(l.low, 0);
-            //id.writeInt32LE(l.high, 4);
-          }
-
-          pokemons.push({
-            disappear_time: exp.toNumber()
-          //, encounter_id: null
-          , encounter_id: id.toString('base64') // this is probably still wrong
-          , latitude: parseFloat(pokemon.Latitude.toString(), 10)
-          , longitude: parseFloat(pokemon.Longitude.toString(), 10)
-          , pokemon_id: pokemon.PokedexTypeId // also NearbyPokemon[i].PokedexNumber
-          , pokemon_name: (pokeio.pokemonlist[pokemon.PokedexTypeId - 1]||{}).name
-          , spawnpoint_id: pokemon.SpawnpointId
-          });
-        });
-      });
-
-      res.send({
-        pokemons: pokemons
-      , pokestops: pokestops
-      , gyms: gyms
-      });
-    });
-  }
-
   // TODO check expAt
   var creds = req.sess;
+  var pokeio;
+
   if (!req.query.latitude || !req.query.longitude) {
     res.send({ error: { message: "missing latitude or longitude" } });
     return;
@@ -254,34 +315,20 @@ function getData(req, res) {
   creds.session.longitude = parseFloat(req.query.longitude || req.query.lng || req.query.lon, 10) || creds.session.longitude;
   creds.session.altitude = parseFloat(req.query.altitude || req.query.alt, 10) || 0;
 
-  ///*
-  var pokeio = PokemonGo.deserialize(creds.session);
+  if ('demo' === req.sess.username) {
+    res.send(mockData(req.sess.session));
+    return;
+  }
 
-  getNearby();
-  //*/
-
-  //
-  /*
-  var pokeio = new PokemonGo.Pokeio();
-  var loc = { type: 'coords', coords: { latitude: creds.session.latitude, longitude: creds.session.longitude } };
-
-  // TODO we don't really want to re-init, but the deserialize isn't working yet
-  pokeio.init(creds.username, creds.password, loc, creds.session.provider, function (err) {
+  pokeio = PokemonGo.deserialize(creds.session);
+  getNearby(pokeio, function (err, results) {
     if (err) {
-      console.error('ERROR: init');
-      console.error(err);
-      res.send({ error: { message: err.toString() } });
-      return;
+      res.send(err);
     }
-
-    pokeio.GetProfile(function(err, profile) {
-      console.log('DEBUG profile');
-      console.log(profile);
-
-      getNearby();
-    });
+    else {
+      res.send(results);
+    }
   });
-  //*/
 }
 
 function getLoc(req, res) {
