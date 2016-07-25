@@ -48,11 +48,6 @@ npm install
 
 # Setup (and build) the Web Client
 git clone https://github.com/Daplie/PokemonGo-Map-web-client.git ./public
-pushd public/
-npm install -g grunt
-npm install
-grunt
-popd
 
 # Run the Server
 node serve.js
