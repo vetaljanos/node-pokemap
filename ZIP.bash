@@ -13,10 +13,11 @@ rsync -av --exclude=.git --exclude=test ./ /tmp/pokemap-build/pokemap/
 pushd /tmp/pokemap-build/
   pushd /tmp/pokemap-build/pokemap/
     rm -f ZIP.bash
+    rm -rf utils/
 
     pushd public/
       rm -f Dockerfile Gruntfile.js Procfile app.json package.json requirements.txt runserver.py
-      rm -rf pogom/ config/ templates/ Easy\ Setup/
+      rm -rf pogom/ config/ templates/ Easy\ Setup/ node_modules/
     popd
 
   popd

@@ -163,7 +163,7 @@ function postLogin(req, res) {
 }
 
 function mockData(loc) {
-  var data = JSON.parse(JSON.stringify(require('./demo.json')));
+  var data = JSON.parse(JSON.stringify(require('./utils/demo.json')));
   var ms = Date.now();
 
   loc.lat = parseFloat(loc.latitude.toFixed(6), 10);
