@@ -224,7 +224,7 @@ function getNearby(pokeio, cb) {
           console.log(fort);
           pokestops.push({
             pokestop_id: fort.FortId
-          , active_pokemon_id: fort.LureInfo.ActivePokemonId
+          , active_pokemon_id: fort.LureInfo && fort.LureInfo.ActivePokemonId || null
           , enabled: fort.Enabled
           , last_modified: parseInt(fort.LastModifiedMs.toString(), 10)
           , latitude: fort.Latitude
