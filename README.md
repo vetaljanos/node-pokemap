@@ -20,8 +20,8 @@ git clone https://github.com/coolaj86/node-pokemap.git
 pushd node-pokemap/
 npm install
 
-# Setup (and build) the Web Client
-git clone https://github.com/Daplie/PokemonGo-Map-web-client.git ./public
+# Setup the Web Client
+git clone https://github.com/Daplie/pokemap-webapp.git ./public
 
 # Run the Server
 node serve.js
