@@ -218,7 +218,7 @@ function getNearby(pokeio, cb) {
     hb.cells.forEach(function (cell) {
       // TODO insert into database since this is longstanding
       cell.Fort.forEach(function (fort) {
-        if ('1' === fort.Type.toString()) {
+        if ('1' === fort.FortType.toString()) {
           // it's a pokestop!
           console.log('DEBUG PokeStop');
           console.log(fort);
