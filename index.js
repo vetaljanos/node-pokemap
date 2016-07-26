@@ -218,21 +218,7 @@ function getNearby(pokeio, cb) {
     hb.cells.forEach(function (cell) {
       // TODO insert into database since this is longstanding
       cell.Fort.forEach(function (fort) {
-        if ('1' === fort.FortType.toString()) {
-          // it's a pokestop!
-          console.log('DEBUG PokeStop');
-          console.log(fort);
-          pokestops.push({
-            pokestop_id: fort.FortId
-          , active_pokemon_id: fort.LureInfo && fort.LureInfo.ActivePokemonId || null
-          , enabled: fort.Enabled
-          , last_modified: parseInt(fort.LastModifiedMs.toString(), 10)
-          , latitude: fort.Latitude
-          , longitude: fort.Longitude
-          , lure_expiration: parseInt(fort.LureInfo.LureExpiresTimestampMs && fort.LureInfo.LureExpiresTimestampMs.toString(), 10) || 0
-          });
-        }
-        else {
+        if (null === fort.FortType || 0 === fort.FortType) {
           // it's a gym!
           gyms.push({
             gym_id: fort.FortId
@@ -240,11 +226,36 @@ function getNearby(pokeio, cb) {
           , enabled: fort.Enabled
           , guard_pokemon_id: fort.GuardPokemonId
           , guard_pokemon_level: fort.GuardPokemonLevel
-          , last_modified: parseInt(fort.LastModifiedMs.toString(), 10)
+          , last_modified: parseInt(fort.LastModifiedMs
+              && fort.LastModifiedMs.toString() || 0, 10) || 0
           , latitude: fort.Latitude
           , longitude: fort.Longitude
           , team_id: fort.Team
           });
+
+          console.log('DEBUG gym');
+          console.log(fort);
+          console.log(gyms[gyms.length - 1]);
+        }
+        else if (1 === fort.FortType) {
+          // it's a pokestop!
+          pokestops.push({
+            pokestop_id: fort.FortId
+          , active_pokemon_id: fort.LureInfo
+              && fort.LureInfo.ActivePokemonId || null
+          , enabled: fort.Enabled
+          , last_modified: parseInt(fort.LastModifiedMs
+              && fort.LastModifiedMs.toString() || 0, 10) || 0
+          , latitude: fort.Latitude
+          , longitude: fort.Longitude
+          , lure_expiration: parseInt(fort.LureInfo
+              && fort.LureInfo.LureExpiresTimestampMs
+              && fort.LureInfo.LureExpiresTimestampMs.toString() || 0, 10) || 0
+          });
+        }
+        else {
+          console.log('Unknown Fort Type:');
+          console.log(fort);
         }
       });
       cell.MapPokemon.forEach(function (pokemon) {
