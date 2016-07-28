@@ -31,7 +31,8 @@ pushd node-pokemap/
 npm install
 
 # Setup the Web Client
-git clone https://github.com/Daplie/pokemap-webapp.git ./public
+git submodule init
+git submodule update
 
 # Run the Server
 node serve.js
