@@ -1,6 +1,6 @@
 {
-  "name": "pokemap",
-  "version": "1.0.0-alpha.100",
+  "name": "pokemap-api",
+  "version": "1.0.0",
   "description": "PokemonGo-Map APIs for node.js",
   "main": "index.js",
   "scripts": {
