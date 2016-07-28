@@ -7,9 +7,9 @@ Key Features
 
 * **Exact locations** of nearby **Pokémon**, **Gyms**, and **Pokéstops**, updated **live**
 * **Easy** to install - just Node.js, HTML/CSS/ES5.1 - no compiling C++, no SASS, no build steps, no python
-* **Multiple users** - stateless so that many users can enjoy your server at once
+* **Multiple users** - web login allows multiple users to enjoy your server at once
 * **Fast** - node.js has built-in (background) async multi-threading, so it's super fast without the headaches
-* **Low-Memory** - caching is done on the client, so the server stays fresh and clean
+* **Low-Memory** - caching is done on the client, and the sessions are stateless, so the server stays fresh and clean
 * **For the Classroom** - since there's no build steps and no compiling, it's great for teaching and learning
 
 The goal is to be a great tool **for the classroom** and for younger or less-experienced techies that are good enough at googling, following instructions, and can copy/paste to make things work.
