@@ -262,26 +262,20 @@ function getNearby(pokeio, cb) {
 
         var exp = pokemon.ExpirationTimeMs; //.toUnsigned(); // TODO convert to int more exactly
         var id = Buffer.alloc(8); // pokemon.EncounterId;        // ??? how to convert from ProtoLong to base64? // also NearbyPokemon[i].EncounterId
-        var l = pokemon.EncounterId;
+        var l = pokemon.EncounterId.toUnsigned();
 
+        /*
         console.log('DEBUG pokemon.EncounterId');
+        console.log(pokemon.EncounterId.toString(10));
         console.log(pokemon.EncounterId.high);
         console.log(pokemon.EncounterId.low);
-        if (id.unsigned) {
-          id.writeUInt32LE(pokemon.EncounterId.high, 0);
-          id.writeUInt32LE(pokemon.EncounterId.low, 4);
-          //id.writeUInt32LE(pokemon.EncounterId.low);
-          //id.writeUInt32LE(pokemon.EncounterId.high);
-        }
-        else {
-          // https://github.com/dcodeIO/long.js/issues/34#issuecomment-234544371
-          // BE
-          id.writeInt32BE(l.high, 0);
-          id.writeInt32BE(l.low, 4);
-          // or LE
-          //id.writeInt32LE(l.low, 0);
-          //id.writeInt32LE(l.high, 4);
-        }
+        */
+
+        // TODO do we need to check os.endianness()?
+        // https://github.com/dcodeIO/long.js/issues/34#issuecomment-234544371
+        // https://github.com/Daplie/node-pokemap/issues/12
+        id.writeInt32BE(l.high, 0);
+        id.writeInt32BE(l.low, 4);
 
         pokemons.push({
           disappear_time: exp.toNumber()
