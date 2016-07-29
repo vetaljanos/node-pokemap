@@ -14,4 +14,6 @@ echo.
 echo.
 echo.
 
+REM http://weblogs.asp.net/whaggard/get-directory-path-of-an-executing-batch-file
+pushd "%~dp0"
 node serve.js
