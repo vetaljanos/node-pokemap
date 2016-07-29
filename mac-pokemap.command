@@ -1,3 +1,5 @@
 #!/bin/bash
 
-node serve.js
+DIR=$(dirname $0)
+
+node "$DIR/serve.js"
