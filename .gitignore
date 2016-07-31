@@ -1,4 +1,6 @@
 test*.bash
+privkey.pem
+*.pem
 
 # Logs
 logs

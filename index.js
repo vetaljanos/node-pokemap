@@ -1,117 +1,42 @@
 'use strict';
 
 var express = require('express');
+var JWT = require('jsonwebtoken');
 var PokemonGo = require('pokemon-go-node-api');
 var bodyParser = require('body-parser');
-var app = express();
 var crypto = require('crypto');
 
-// TODO use database
-var jankStore = {
-  demo: {
-    exp: new Date(Date.now() + (365 * 24 * 60 * 60 * 1000))
-  , expIn: (365 * 24 * 60 * 60 * 1000)
-  , accessToken: 'demo'
-  , username: 'demo'
-  , password: 'demo' // TODO store in JWT, encrypted
-  , provider: 'demo'
-  , session: {
-      latitude: 40.36915523640919
-    , longitude: -111.75098587678943
+require('./lib/pokeio-hotfix').fix(PokemonGo);
+
+module.exports.create = function (options) {
+
+var app = express();
+var keypair = options.keypair;
+var secret = crypto.pbkdf2Sync(keypair.privateKeyPem, '', 1, 16, 'sha256');
+var iv = Buffer.alloc(16); // all zeros
+
+function createDemoToken(expIn) {
+  console.log(secret);
+  var cipher = crypto.createCipheriv('aes128', secret, iv);
+  var localToken = JWT.sign(
+    { exp: Math.round(new Date(Date.now() + (expIn * 1000)) / 1000)
+
+    , username: 'demo'
+    , password: cipher.update('demo', 'utf8', 'base64') + cipher.final('base64')
+    , provider: 'demo'
+
+    , accessToken: '---'
+    , accessTokenExpires: '---'
+    , apiEndpoint: '---'
     }
-  }
-};
+  , keypair.privateKeyPem
+  , { algorithm: 'RS256'}
+  );
 
-//
-// Shim for PokemonGo lib, needs pull request once complete
-//
-//
-//var request = require('request');
-//var FileCookieStore = require('tough-cookie-filestore');
-//var path = require('path');
-PokemonGo.Pokeio.prototype.serialize = function () {
-  var self = this;
-  var json = {
-    username: self.playerInfo.username
-  , password: self.playerInfo.password
-  , provider: self.playerInfo.provider
+  return localToken;
+}
 
-  , latitude: self.playerInfo.latitude
-  , longitude: self.playerInfo.longitude
-  , altitude: self.playerInfo.altitude
-
-    // refresh before expires
-  , accessToken: self.playerInfo.accessToken
-  , accessTokenExpires: self.playerInfo.accessTokenExpires
-  , apiEndpoint: self.playerInfo.apiEndpoint
-  };
-  console.log('DEBUG json');
-  console.log(json);
-  return json;
-};
-PokemonGo.serialize = function (pokeio) {
-  return pokeio.serialize();
-};
-
-PokemonGo.Pokeio.prototype.deserialize = function (opts) {
-  var self = this;
-  self.playerInfo.username = opts.username || 'johndoe';
-  self.playerInfo.password = opts.password || 'secret';
-  self.playerInfo.provider = opts.provider || 'ptc';
-  self.playerInfo.accessToken = opts.accessToken || 'xyz';
-  self.playerInfo.accessTokenExpires = opts.accessTokenExpires || 0;
-  self.playerInfo.latitude = opts.latitude || 40.36915523640919;
-  self.playerInfo.longitude = opts.longitude || -111.75098587678943;
-  self.playerInfo.altitude = opts.altitude || 0;
-
-  // TODO
-  // logging reveals that cookies are probably not even used, just JWTs :)
-  //self.j = request.jar(new FileCookieStore(path.resolve('/tmp/', self.playerInfo.username + '.pokemongo.json')));
-  //self.request = request.defaults({ jar: self.j });
-
-  self.playerInfo.apiEndpoint = opts.apiEndpoint;
-};
-
-PokemonGo.deserialize = function (opts) {
-  var pokeio = new PokemonGo.Pokeio();
-  pokeio.deserialize(opts);
-  return pokeio;
-};
-
-PokemonGo.Pokeio.prototype.Login = function (username, password, provider, callback) {
-  var self = this;
-
-  if (provider !== 'ptc' && provider !== 'google') {
-    return callback(new Error('Invalid provider'));
-  }
-
-  self.playerInfo.provider = provider;
-  self.GetAccessToken(username, password, function (err, accessToken) {
-    // Note: stores accessToken as self.playerInfo.accessToken
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    self.GetApiEndpoint(function (err, apiEndpoint) {
-      // Note: stores endpoint as self.playerInfo.apiEndpoint
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (callback) {
-        callback(null, {
-          username: username
-        //, password: password // TODO cipher
-        , provider: provider
-        , accessToken: accessToken
-        , apiEndpoint: apiEndpoint
-        });
-      }
-    });
-  });
-};
+var demoToken = createDemoToken((365 * 24 * 60 * 60));
 
 function postLogin(req, res) {
   if (
@@ -121,7 +46,9 @@ function postLogin(req, res) {
     || 'user' === req.body.username
     || 'password' === req.body.password
   ) {
-    res.send({ access_token: jankStore.demo.accessToken, expires_in: jankStore.demo.expIn });
+    var expIn = (365 * 24 * 60 * 60);
+    var localToken = createDemoToken(expIn);
+    res.send({ access_token: localToken, expires_in: expIn });
     return;
   }
 
@@ -142,23 +69,43 @@ function postLogin(req, res) {
     }
 
     // TODO use JWT and database
-    var rnd = crypto.randomBytes(16).toString('hex');
     var expIn = (15 * 60);
     var expAt = new Date(Date.now() + (expIn * 1000)).valueOf();
+    var session = PokemonGo.serialize(pokeio);
+    var cipher = crypto.createCipheriv('aes128', secret, iv);
 
-    // TODO send password back to client, encrypted
-    jankStore[rnd] = {
-      exp: expAt
-    , accessToken: rnd
-    , username: req.body.username
-    , password: req.body.password // TODO store in JWT, encrypted
-    , provider: req.body.provider
-    , session: PokemonGo.serialize(pokeio)
-    };
-    // TODO XXX REMOVE THIS!!!
-    jankStore.test = jankStore[rnd];
+    if (!session.accessToken) {
+      console.log('LOGIN session ERROR:');
+      console.log(session);
 
-    res.send({ access_token: jankStore[rnd].accessToken, expires_in: expIn });
+      res.send({ error: { message: "Login failed. Servers may be unavailable or login may be invalide." } });
+      return;
+    }
+
+    if (/null/.test(session.apiEndpoint)) {
+      console.log('LOGIN session ERROR:');
+      console.log(session);
+
+      res.send({ error: { message: "API Endpoint servers are not currently available. Try again later." } });
+      return;
+    }
+
+    var localToken = JWT.sign(
+      { exp: Math.round(expAt / 1000)
+
+      , username: req.body.username
+      , password: cipher.update(req.body.password, 'utf8', 'base64') + cipher.final('base64')
+      , provider: req.body.provider
+
+      , accessToken: session.accessToken
+      , accessTokenExpires: session.accessTokenExpires
+      , apiEndpoint: session.apiEndpoint
+      }
+    , keypair.privateKeyPem
+    , { algorithm: 'RS256'}
+    );
+
+    res.send({ access_token: localToken, expires_in: expIn });
   });
 }
 
@@ -316,16 +263,24 @@ function getData(req, res) {
   // geocoder.reverseGeocode(lat, lng, function (err, data) { ... });
   // geocoder.geocode(locationName, function (err, data) { ... });
 
-  creds.session.latitude = parseFloat(req.query.latitude || req.query.lat, 10) || creds.session.latitude;
-  creds.session.longitude = parseFloat(req.query.longitude || req.query.lng || req.query.lon, 10) || creds.session.longitude;
-  creds.session.altitude = parseFloat(req.query.altitude || req.query.alt, 10) || 0;
+  creds.latitude = parseFloat(req.query.latitude || req.query.lat, 10) || creds.latitude;
+  creds.longitude = parseFloat(req.query.longitude || req.query.lng || req.query.lon, 10) || creds.longitude;
+  creds.altitude = parseFloat(req.query.altitude || req.query.alt, 10) || 0;
 
   if ('demo' === req.sess.username) {
-    res.send(mockData(req.sess.session));
+    res.send(mockData(req.sess));
     return;
   }
 
-  pokeio = PokemonGo.deserialize(creds.session);
+  console.log(creds);
+  pokeio = PokemonGo.deserialize(creds);
+  console.log(pokeio.playerInfo);
+  /*
+  console.log("DEBUG");
+  console.log(creds);
+  console.log(PokemonGo.deserialize.toString());
+  console.log(pokeio);
+  */
   getNearby(pokeio, function (err, results) {
     if (err) {
       res.send(err);
@@ -338,22 +293,39 @@ function getData(req, res) {
 
 function getLoc(req, res) {
   res.send({
-    latitude: req.sess.session.latitude
-  , longitude: req.sess.session.longitude
+    latitude: req.sess.latitude
+  , longitude: req.sess.longitude
   });
 }
 
 function postLoc(req, res) {
-  req.sess.session.latitude = parseFloat(req.query.lat, 10);
-  req.sess.session.longitude = parseFloat(req.query.lng, 10);
+  //var expIn = 15 * 60;
+  var localToken;
 
-  res.send({ success: true });
+  req.sess.latitude = parseFloat(req.query.lat, 10);
+  req.sess.longitude = parseFloat(req.query.lng, 10);
+  //req.sess.exp = new Date(Date.now() + (expIn * 1000));
+
+  localToken = JWT.sign(req.sess, keypair.privateKeyPem, { algorithm: 'RS256'});
+
+  res.send({ success: true, access_token: localToken, expires_in: 15 * 60 });
 }
 
 function attachSession(req, res, next) {
   var accessToken = (req.headers.authorization||'').replace(/(Bearer|Token|JWT) /ig, '');
 
-  req.sess = jankStore[accessToken];
+  if ('demo' === accessToken) {
+    accessToken = demoToken;
+  }
+
+  if (accessToken) {
+    try {
+      req.sess = JWT.verify(accessToken, keypair.publicKeyPem, { algorithms: [ 'RS256' ] });
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
   next();
 }
 
@@ -379,4 +351,6 @@ app.get('/loc', requireSession, getLoc);
 app.post('/next_loc', requireSession, postLoc);
 //app.post('/pokemon', getData);
 
-module.exports = app;
+return app;
+
+};
