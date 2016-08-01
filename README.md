@@ -24,6 +24,8 @@ Go to [Pokémap Web App](https://github.com/Daplie/pokemap-webapp)
 
 If you would like to get the code and build from scratch, here's what you need to do:
 
+You need node.js **v6.3.1** or higher **NOT v4**
+
 ```bash
 # Setup the Server
 git clone https://github.com/coolaj86/node-pokemap.git
