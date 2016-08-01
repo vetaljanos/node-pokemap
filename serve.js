@@ -34,19 +34,33 @@ function serve(keypair) {
 //
 // Generate an RSA key for signing sessions, if it doesn't exist
 //
+console.log('Checking for existing RSA private key to secure login sessions...');
 fs.readFile(config.rsaKeyPath, 'ascii', function (err, privkey) {
   if (!err) {
+    console.log('RSA private key found, using it.');
     serve({ privateKeyPem: privkey, publicKeyPem: RSA.exportPublicPem({ privateKeyPem: privkey }) });
     return;
   }
 
+  console.log('Generating an RSA 1024-bit key to secure login sessions...');
+  if (!RSA._URSA && /arm|mips/i.test(require('os').arch)) {
+    console.log("");
+    console.log("You're on a slow computer so this process could take dozens of minutes.");
+    console.log("If you're a technical person, try doing this instead:");
+    console.log("");
+    console.log("openssl genrsa -out '" + require('path').join(__dirname, 'privkey.pem') + "' 1024");
+    console.log("");
+  }
+
   RSA.generateKeypair(1024, 65537, { pem: true, public: true }, function (err, keypair) {
+    console.log('Generated 1024-bit RSA key.');
     fs.writeFile(config.rsaKeyPath, keypair.privateKeyPem, 'ascii', function (err) {
       if (err) {
         console.error(err);
         return;
       }
 
+      console.log('Generated and saved 1024-bit RSA key.');
       serve(keypair);
     });
   });

@@ -16,7 +16,6 @@ var secret = crypto.pbkdf2Sync(keypair.privateKeyPem, '', 1, 16, 'sha256');
 var iv = Buffer.alloc(16); // all zeros
 
 function createDemoToken(expIn) {
-  console.log(secret);
   var cipher = crypto.createCipheriv('aes128', secret, iv);
   var localToken = JWT.sign(
     { exp: Math.round(new Date(Date.now() + (expIn * 1000)) / 1000)
