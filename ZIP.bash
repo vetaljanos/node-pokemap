@@ -12,7 +12,10 @@ rsync -av --exclude=.git --exclude=test ./ /tmp/pokemap-build/pokemap/
 
 pushd /tmp/pokemap-build/
   pushd /tmp/pokemap-build/pokemap/
+    # remove this script
     rm -f ZIP.bash
+    # remove private key
+    rm -f privkey.pem
 
     # preserve demo.json, but remove other debug files
     rsync -av utils/demo.json ./

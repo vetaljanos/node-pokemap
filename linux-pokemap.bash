@@ -1,7 +1,11 @@
 #!/bin/bash
 
+DIR=$(dirname $0)
+
 if [ ! -f privkey.pem ]; then
-  openssl genrsa -out privkey.pem 1024 > /dev/null 2> /dev/null
+  echo "Generating 1024-bit RSA private key..."
+  openssl genrsa -out "$DIR/privkey.pem" 1024 > /dev/null 2> /dev/null
+  echo "done."
 fi
 
-node serve.js
+node "$DIR/serve.js"
