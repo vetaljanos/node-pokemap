@@ -14,7 +14,7 @@ Key Features
 
 The goal is to be a great tool **for the classroom** and for younger or less-experienced techies that are good enough at googling, following instructions, and can copy/paste to make things work.
 
-![](http://i.imgur.com/i2PHT9d.png)
+![](http://i.imgur.com/oWHaC8K.png)
 
 # Quick and Easy Install for Normal-ish People
 
