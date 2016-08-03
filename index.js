@@ -68,7 +68,8 @@ function postLogin(req, res) {
     }
 
     // TODO use JWT and database
-    var expIn = (15 * 60);
+    //var expIn = (15 * 60);
+    var expIn = (365 * 24 * 60 * 60);
     var expAt = new Date(Date.now() + (expIn * 1000)).valueOf();
     var session = PokemonGo.serialize(pokeio);
     var cipher = crypto.createCipheriv('aes128', secret, iv);
