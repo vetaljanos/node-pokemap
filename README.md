@@ -20,6 +20,14 @@ The goal is to be a great tool **for the classroom** and for younger or less-exp
 
 Go to [Pokémap Web App](https://github.com/Daplie/pokemap-webapp)
 
+# Quick and Easy Install for node.js Users
+
+```bash
+npm install -g pokemap
+
+pokemap
+```
+
 # Instructions for Computer Programmers
 
 If you would like to get the code and build from scratch, here's what you need to do:
