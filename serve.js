@@ -14,11 +14,13 @@ var config = require('./config.js');
 
 
 function serve(keypair) {
+  var path = require('path');
   var pokeapp = require('./').create({ keypair: keypair });
+  var serveStatic = express.static(path.join(__dirname, 'public', 'static'));
 
   app.use('/', pokeapp);
-  app.use('/static', express.static('./public/static'));
-  app.use('/', express.static('./public/static'));
+  app.use('/static', serveStatic);
+  app.use('/', serveStatic);
 
 
   plainServer.listen(3000, function () {
