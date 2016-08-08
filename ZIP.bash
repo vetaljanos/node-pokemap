@@ -3,7 +3,8 @@
 set -e
 set -u
 
-ZIPFILE=pokemap-$(date +%Y-%m-%d).zip
+#ZIPFILE=pokemap-$(date +%Y-%m-%d).zip
+ZIPFILE=pokemap-$(git describe --abbrev=0).zip
 
 rm -rf /tmp/pokemap-build/
 mkdir -p /tmp/pokemap-build/{pokemap,test}
