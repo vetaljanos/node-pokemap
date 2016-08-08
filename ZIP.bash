@@ -37,3 +37,7 @@ pushd /tmp/pokemap-build/
 popd
 
 unzip /tmp/pokemap-build/"$ZIPFILE" -d /tmp/pokemap-build/test/
+
+echo ""
+echo /tmp/pokemap-build/"$ZIPFILE"
+echo ""
