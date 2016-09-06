@@ -22,7 +22,7 @@ function serve(keypair) {
   app.use('/', serveStatic);
 
 
-  plainServer.listen(process.env.PORT || , function () {
+  plainServer.listen(process.env.PORT || 3000, function () {
     console.log('Listening on http://127.0.0.1:' + plainServer.address().port);
   });
 }
