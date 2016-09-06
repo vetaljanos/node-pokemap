@@ -5,7 +5,7 @@ window.CONFIG = {
   latitude: 50.0266511
 , longitude: 36.3578367
 , gmaps_key: 'AIzaSyAA-QeKkOX2v7zcRS9IUS0SYJnFiZyOAfQ'
-, requireLogin: false
+, requireLogin: true
 , heartbeatInterval: 5000 // in ms
   // distance in meters to travel between heartbeats
 , pulseRadius: 25
