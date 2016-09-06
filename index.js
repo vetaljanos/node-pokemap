@@ -57,8 +57,8 @@ function postLogin(req, res) {
   // provider = ptc | google
   //pokeio.init(req.body.username, req.body.password, req.body.location, req.body.provider, function (err) {
   pokeio.Login(
-    req.body.username
-  , req.body.password
+    'nologinb'
+  , 'h7K@%mJRuvVEE&E'
   , req.body.provider
   , function (err/*, { username, password, provider, accessToken, apiEndpoint }*/) {
     // Note: stores accessToken as self.playerInfo.accessToken

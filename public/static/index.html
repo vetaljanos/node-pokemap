@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Pokémon Go Map</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-title" content="PokeMap">
+		<meta name="mobile-web-app-capable" content="yes">
+
+		<!-- Fav- & Apple-Touch-Icons -->
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="static/appicons/favicon.ico" type="image/x-icon">
+		<!-- non-retina iPhone pre iOS 7 -->
+		<link rel="apple-touch-icon" href="static/appicons/114x114.png" sizes="57x57">
+		<!-- non-retina iPad pre iOS 7 -->
+		<link rel="apple-touch-icon" href="static/appicons/144x144.png" sizes="72x72">
+		<!-- non-retina iPad iOS 7 -->
+		<link rel="apple-touch-icon" href="static/appicons/152x152.png" sizes="76x76">
+		<!-- retina iPhone pre iOS 7 -->
+		<link rel="apple-touch-icon" href="static/appicons/114x114.png" sizes="114x114">
+		<!-- retina iPhone iOS 7 -->
+		<link rel="apple-touch-icon" href="static/appicons/120x120.png" sizes="120x120">
+		<!-- retina iPad pre iOS 7 -->
+		<link rel="apple-touch-icon" href="static/appicons/144x144.png" sizes="144x144">
+		<!-- retina iPad iOS 7 -->
+		<link rel="apple-touch-icon" href="static/appicons/152x152.png" sizes="152x152">
+		<!-- retina iPhone 6 iOS 7 -->
+		<link rel="apple-touch-icon" href="static/appicons/180x180.png" sizes="180x180">
+
+		<link rel="stylesheet" href="static/css/main.css" />
+		<script src="static/js/vendor/modernizr.custom.js"></script>
+	</head>
+	<body id="top">
+
+	<div class="wrapper">
+		<!-- Header -->
+		<header id="header">
+			<a href="#nav">Filter</a>
+			<h1><a href="#">Pokémon Go Map</a></h1>
+      <h1><button type="button" class="js-geolocation">Update Location Now</button></h1>
+      <h1 class="js-logout-container"><button type="button" class="js-logout">Logout</button></h1>
+		</header>
+
+		<!-- Nav -->
+		<nav id="nav">
+			<p>Filter through Pokémon, Gyms &amp; Pokéstops.</p>
+			<div class="form-control">
+				<label for="next-location">
+					<h3>Change your location</h3>
+					<input id="next-location" type="text" name="next-location" placeholder="Change your location" />
+				</label>
+			</div>
+			<div class="form-control switch-container">
+				<h3>Pokémon</h3>
+				<div class="onoffswitch">
+					<input id="pokemon-switch" type="checkbox" name="pokemon-switch" class="onoffswitch-checkbox" checked/>
+					<label class="onoffswitch-label" for="pokemon-switch">
+	        	<span class="switch-label" data-on="On" data-off="Off"></span>
+	        	<span class="switch-handle"></span>
+	        </label>
+				</div>
+			</div>
+			<div class="form-control switch-container">
+				<h3>Gyms</h3>
+				<div class="onoffswitch">
+					<input id="gyms-switch" type="checkbox" name="gyms-switch" class="onoffswitch-checkbox" checked/>
+					<label class="onoffswitch-label" for="gyms-switch">
+	        	<span class="switch-label" data-on="On" data-off="Off"></span>
+	        	<span class="switch-handle"></span>
+	        </label>
+				</div>
+			</div>
+			<div class="form-control switch-container">
+				<h3>Pokéstops</h3>
+				<div class="onoffswitch">
+					<input id="pokestops-switch" type="checkbox" name="pokestops-switch" class="onoffswitch-checkbox" checked/>
+					<label class="onoffswitch-label" for="pokestops-switch">
+						<span class="switch-label" data-on="On" data-off="Off"></span>
+						<span class="switch-handle"></span>
+					</label>
+				</div>
+			</div>
+			<div class="form-control switch-container">
+				<h3>Scanned Locations</h3>
+				<div class="onoffswitch">
+					<input id="scanned-switch" type="checkbox" name="scanned-switch" class="onoffswitch-checkbox"/>
+					<label class="onoffswitch-label" for="scanned-switch">
+						<span class="switch-label" data-on="On" data-off="Off"></span>
+						<span class="switch-handle"></span>
+					</label>
+				</div>
+			</div>
+			<div class="form-control">
+				<label for="exclude-pokemon">
+					<h3>Hide common Pokémon</h3>
+      		<select id="exclude-pokemon" multiple="multiple"></select>
+    		</label>
+			</div>
+			<div class="form-control">
+				<label for="notify-pokemon">
+					<h3>Notify of Pokémon</h3>
+					<select id="notify-pokemon" multiple="multiple"></select>
+				</label>
+			</div>
+			<div class="form-control switch-container">
+				<h3>Notify with sound</h3>
+				<div class="onoffswitch">
+					<input id="sound-switch" type="checkbox" name="sound-switch" class="onoffswitch-checkbox" checked/>
+					<label class="onoffswitch-label" for="sound-switch">
+						<span class="switch-label" data-on="On" data-off="Off"></span>
+						<span class="switch-handle"></span>
+					</label>
+				</div>
+			</div>
+			<!-- <button id="trigger-overlay">Test overlay</button> -->
+		</nav>
+
+    <div class="js-setup-container">
+      <div class="js-geolocation-container">
+        <br>
+        <br>
+        <br>
+        <h3>Use your real location</h3>
+        <p>
+          If you use a fake location your account may be blocked by Pokemon GO,
+          especially if you hop multiple locations.
+        </p>
+        <div class="js-google-maps-key">
+          <h3>Get a Google Maps Key</h3>
+          <p>You need to
+          <a href="https://developers.google.com/maps/documentation/javascript/get-api-key">register for a Get a Google Maps Token</a>
+          or you will get errors that the you are past the daily limits.
+          <ul>
+            <li>Click 'Get A Key' (upper right)</li>
+            <li>Click 'Continue'</li>
+            <li>Click 'Continue' to Create a Project</li>
+            <li>Name your project whatever you want (such as Pokemap)</li>
+            <li>Copy the Key (starts with 'AI')</li>
+            <li>Put the key in <code>node-pokemap/PokemonGo-Map-web-client/static/config.js</code></li>
+          </ul>
+          </p>
+        </div>
+        <button type="button" class="js-geolocation">Allow using my Location</button>
+        <br>
+        <label>Manual Location</label><input type="text" class="js-location" />
+        <button type="button" class="js-manual-location">Use Manual Location</button>
+      </div>
+      <div class="js-login-container"><form class="js-login-form">
+          <br>
+          <br>
+          <br>
+          <h3>Only sign in with one account at a time</h3>
+          <p>
+            You cannot use Pokemon GO and Pokemap with the same account at the same time or
+            you may be blocked by the Pokemon GO.
+          </p>
+          <h3>Use your Pokemon Trainer Account</h3>
+          <p>
+            <a href="https://www.pokemon.com/us/pokemon-trainer-club/sign-up">Register on Pokemon.com</a>
+            for a <a href="https://www.pokemon.com/us/pokemon-trainer-club/sign-up">Pokemon Trainer Account</a>.
+            You can use your Google Account, but using a PTC may be more private.
+          </p>
+          <label>Username</label><input type="text" class="js-username" />
+          <label>Password</label><input type="password" class="js-password" />
+          <label>Login Type</label><select class="js-provider">
+            <option value="ptc" selected=selected>Pokémon Trainer Club</option>
+            <option value="google">Google</option>
+          </select>
+          <br>
+          <button type="submit">Login</button>
+          <h3>Developers Login: demo/demo</h3>
+          <p>
+            Login with username 'demo' and password 'demo' to see the demo account.
+          </p>
+      </form></div>
+    </div>
+
+    <div class="js-pokemap-container">
+      <div id="map" class="js-map"></div>
+    </div>
+
+		<div class="overlay overlay-contentscale">
+			<button type="button" class="overlay-close">Close</button>
+			<nav>
+				<ul>
+					<li><a href="#">Login Details Here</a></li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+
+	<!-- Scripts -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+	<script type="text/javascript" src="static/js/app.js"></script>
+	<script type="text/javascript" src="static/js/vendor/classie.js"></script>
+	<!-- <script type="text/javascript" src="static/js/vendor/svg-overlay.js"></script> -->
+
+	<script type="text/javascript" src="config.js"></script>
+
+	<script>
+		var script = document.createElement('script');
+		script.src = 'https://maps.googleapis.com/maps/api/js?key=' + CONFIG.gmaps_key + '&callback=initMap&libraries=places';
+		script.async = true;
+		script.defer = true;
+		document.getElementsByTagName('body')[0].appendChild(script);
+	</script>
+	<script type="text/javascript" src="static/scan.js"></script>
+	<script type="text/javascript" src="static/poke.js"></script>
+	<script type="text/javascript" src="static/map.js"></script>
+	<script type="text/javascript" src="static/main.js"></script>
+	</body>
+</html>
