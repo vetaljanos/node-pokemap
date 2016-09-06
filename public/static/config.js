@@ -2,11 +2,11 @@
 
 // CHANGE ME
 window.CONFIG = {
-  latitude: 50.0266511
-, longitude: 36.3578367
+  latitude: 0
+, longitude: 0
 , gmaps_key: 'AIzaSyAA-QeKkOX2v7zcRS9IUS0SYJnFiZyOAfQ'
 , requireLogin: true
-, heartbeatInterval: 5000 // in ms
+, heartbeatInterval: 25000 // in ms
   // distance in meters to travel between heartbeats
 , pulseRadius: 25
   // number of concentric rings to expand during search
