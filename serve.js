@@ -15,12 +15,11 @@ var config = require('./config.js');
 function serve(keypair) {
   var path = require('path');
   var pokeapp = require('./').create({ keypair: keypair });
-  var serveStatic = express.static(path.join(__dirname, 'public', 'static'));
+  var serveStatic = express.static(path.join(__dirname, 'static'));
 
   app.use('/', pokeapp);
   app.use('/static', serveStatic);
   app.use('/', serveStatic);
-
 
   plainServer.listen(process.env.PORT || 3000, function () {
     console.log('Listening on http://127.0.0.1:' + plainServer.address().port);
